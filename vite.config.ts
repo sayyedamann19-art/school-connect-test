@@ -26,14 +26,17 @@ export default defineConfig({
       registerType: "autoUpdate",
       injectRegister: null,
       filename: "sw.js",
+      // Nitro publishes assets from this directory on Cloudflare Workers.
+      outDir: ".output/public",
       // The app registers the worker itself from src/lib/pwa.ts (guarded).
       devOptions: { enabled: false },
       manifest: false,
       workbox: {
-        globDirectory: "dist/client",
+        globDirectory: ".output/public",
         globPatterns: ["**/*.{js,css,woff2,png,svg,ico,webmanifest}"],
-        navigateFallback: "/",
-        navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//, /^\/_serverFn\//],
+        // HTML comes from SSR and is cached by the NetworkFirst rule below.
+        // There is no prerendered app shell in the precache.
+        navigateFallback: null,
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === "navigate",
